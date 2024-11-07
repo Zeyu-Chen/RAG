@@ -1,4 +1,4 @@
-import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio';
+import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import 'dotenv/config';
@@ -6,6 +6,7 @@ import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
 import { createRetrievalChain } from 'langchain/chains/retrieval';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
+import 'pdf-parse';
 
 const gptModel = new ChatOpenAI({
   modelName: 'gpt-4',
@@ -13,10 +14,7 @@ const gptModel = new ChatOpenAI({
 });
 
 // Load
-const loader = new CheerioWebBaseLoader(
-  'https://circleci.com/blog/introduction-to-graphql/',
-  {}
-);
+const loader = new PDFLoader('./test.pdf');
 
 const documents = await loader.load();
 
@@ -26,13 +24,13 @@ const splitter = new RecursiveCharacterTextSplitter({
   chunkOverlap: 200,
 });
 
-const webPageSplits = await splitter.splitDocuments(documents);
+const pdfSplits = await splitter.splitDocuments(documents);
 
 // Embed
 const embedder = new OpenAIEmbeddings();
 
 // Store
-const store = await MemoryVectorStore.fromDocuments(webPageSplits, embedder);
+const store = await MemoryVectorStore.fromDocuments(pdfSplits, embedder);
 
 // Retrieve
 const retriever = store.asRetriever();
@@ -58,7 +56,7 @@ const retrievalChain = await createRetrievalChain({
 });
 
 const response = await retrievalChain.invoke({
-  input: 'How is GraphQL compared to REST?',
+  input: 'What is Zeyu previous work?',
 });
 
 console.log(response.answer);
