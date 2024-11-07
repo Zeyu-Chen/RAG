@@ -1,12 +1,10 @@
 import 'dotenv/config';
 import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
-import { pull } from 'langchain/hub';
 import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
 import { createRetrievalChain } from 'langchain/chains/retrieval';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
-import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 
 const gptModel = new ChatOpenAI({
